@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Marvel Character Inquisitor</title>
+<!--    <style>
+        img {
+            width: 300px;
+            height: auto;
+        }
+    </style> -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="form-validation.css" />
+  </head>
+
+  <body>
+    <div class="container">
+        <h1></h1>
+        <form id="search-form">
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select class="form-control"  id="select-category">
+                    <option value="Choose" selected="selected">Choose category</option>
+                    <option value="character">Character Name</option>
+                    <option value="title">Comics Title</option>
+                    <option value="series">Series</option>
+                    <option value="event">Event</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="search">Search Word</label>
+                <input
+                  id="search-field"
+                  class="form-control validate-input"
+                  type="text"
+                  name="Search"
+                  minlength="3"
+                  required
+                />
+                <small class="error" aria-live="polite"></small>
+            </div>
+
+            <!--Submit Button-->
+            <div class="form-group">
+                <input id="submit-btn" class="btn btn-primary" type="submit" value="Submit" />
+                <input id="clear-btn" class="btn btn-primary" type="clear" value="Clear" /> 
+            </div>
+
+            <div>
+                 
+            </div>
+
+            <!--Comics Table-->
+            <div id="comics-table-container" class="table-container table-bordered form-group img-fluid"></div>
+            
+            <!--Seriess Table-->
+            <div id="series-table-container" class="table-container form-group"></div>
+            
+            <!--Events Table-->
+            <div id="events-table-container" class="table-container form-group"></div>
+
+            <!-- Marvel attribution -->
+            <div id="attributionContainer" class=""></div>
+
+        </form>
+    </div>
+
+    <div id="comicCoverContainer" class="img-fluid">
+
+    </div>
+
+    <!-- Include CryptoJS via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+    <!-- Marvel Database Querier -->
+    <script src="api-keys.js"></script>
+    <script src="defs.js"></script>
+    <script src="marvel-db-querier.js"></script>
+  </body>
+
+</html>

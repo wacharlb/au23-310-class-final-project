@@ -1,0 +1,21 @@
+.invalid {
+    border: 1px solid red;
+    background-color: 1px solid #ffdddd;
+}
+
+.hidden {
+    display: none;
+}
+
+input:invalid {
+    border: 1px solid red;
+}
+
+input:valid {
+    border: 1px solid green;
+}
+
+.btn {
+    width: 80px;
+    padding: 5px;
+}
