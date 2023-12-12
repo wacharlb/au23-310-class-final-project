@@ -9,6 +9,11 @@ const searchfield = document.getElementById("search-field");
 const comicsTableContainer = document.getElementById('comics-table-container');
 const seriesTableContainer = document.getElementById('series-table-container');
 const eventsTableContainer = document.getElementById('events-table-container');
+const totalResultsContainerUpper = document.getElementById('total-results-container-upper');
+const totalResultsContainerLower = document.getElementById('total-results-container-lower');
+const attributionContainer = document.getElementById('attributionContainer');
+const resultsCountsUpper = document.createTextNode("");
+const resultsCountsLower = document.createTextNode(""); 
 
 let total = 0;
 let pageCount = 1;
@@ -32,21 +37,28 @@ function clearTable(tableName) {
 const submitButton = document.getElementById('submit-btn');
 form.addEventListener("submit", function(e) {
     e.preventDefault();
+    e.stopPropagation();
     
     //allComics = [];
     comicsTableContainer.innerHTML = '';
     seriesTableContainer.innerHTML = '';
     eventsTableContainer.innerHTML = '';
 
+    totalResultsContainerUpper.classList.remove('hidden');
+    totalResultsContainerLower.classList.remove('hidden');
+
+    attributionContainer.classList.remove('hidden');
+
     const searchWords = searchfield.value;    
 
-    const starting_offset = 0;    
-    displayComicsForCharacterName(searchWords, 20, 0);
+    offset = 0;
+    displayComicsForCharacterName(searchWords, limit, offset);
 });
 
 const nextButton = document.getElementById('next-btn');
 nextButton.addEventListener('click', function(e) {
     e.preventDefault();
+    e.stopPropagation();
 
     currentPage = total / limit
 
@@ -58,7 +70,6 @@ nextButton.addEventListener('click', function(e) {
     seriesTableContainer.innerHTML = '';
     eventsTableContainer.innerHTML = '';
 
-
     const searchWords = searchfield.value;
     displayComicsForCharacterName(searchWords, limit, offset);
 });
@@ -66,6 +77,8 @@ nextButton.addEventListener('click', function(e) {
 const prevButton = document.getElementById('prev-btn');
 prevButton.addEventListener('click', function(e) {
     e.preventDefault();
+    e.stopPropagation();
+
     if(offset > 0) {
         offset -= limit;
     }
@@ -80,13 +93,28 @@ prevButton.addEventListener('click', function(e) {
 
 const clearButton = document.getElementById('clear-btn');
 clearButton.addEventListener("click", function(e) {
-    e.preventDefault();    
+    e.preventDefault();
+    e.stopPropagation();
+
     comicsTableContainer.innerHTML = '';
     seriesTableContainer.innerHTML = '';
     eventsTableContainer.innerHTML = '';
 
     nextButton.classList.add('hidden');
     prevButton.classList.add('hidden');
+
+    //totalResultsContainerUpper.removeChild(totalResultsContainerUpper.firstChild);
+    //totalResultsContainerLower.removeChild(totalResultsContainerLower.firstChild);
+
+    //totalResultsContainerUpper.remove(resultsCountsUpper);
+    //totalResultsContainerLower.remove(resultsCountsUpper);
+
+    totalResultsContainerUpper.classList.add('hidden');
+    totalResultsContainerLower.classList.add('hidden');
+
+    attributionContainer.classList.add('hidden');
+
+    offset = 0;
 });
 
 function displayComicCover(imageUrl) {
@@ -118,6 +146,28 @@ displayComicsForCharacterName = (characterName, limit, offset) => {
         total = characterObject.getTotal();
         pageCount = Math.ceil(total/limit);
     
+        let totalsCount = `${offset + 1} - ${offset+comics.length}, Total Results: ${total}`
+
+        document.getElementById('total-results-container-upper')
+
+        if (totalResultsContainerUpper.firstChild && totalResultsContainerUpper.firstChild === Node.TEXT_NODE) {
+            resultsCountsUpper.textContent = totalsCount;
+        } else {
+            resultsCountsUpper.textContent = totalsCount;
+            totalResultsContainerUpper.appendChild(resultsCountsUpper)
+        }
+
+        if (totalResultsContainerLower.firstChild && totalResultsContainerLower.firstChild === Node.TEXT_NODE) {
+            resultsCountsLower.textContent = totalsCount;
+        } else {
+            resultsCountsLower.textContent = totalsCount;
+            totalResultsContainerLower.appendChild(resultsCountsLower)
+        }
+       
+        resultsCountsLower 
+        document.getElementById('total-results-container-upper').appendChild(resultsCountsUpper);
+        document.getElementById('total-results-container-lower').appendChild(resultsCountsLower);
+
         const attributionHTML = characterObject.getAttributionHTML();
         const comicsTableContainer = document.getElementById('comics-table-container');
         const comicsTable = document.createElement('table');
@@ -202,7 +252,6 @@ getCoverArtImageSmall = (url, size, type) => {
 
 // Function to display attribution HTML in your page
 function displayAttribution(attributionHTML) {
-    const attributionContainer = document.getElementById('attributionContainer');
     attributionContainer.innerHTML = attributionHTML;
 }
 
