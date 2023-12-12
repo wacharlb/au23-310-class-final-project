@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Marvel Character Inquisitor</title>
-<!--    <style>
-        img {
-            width: 300px;
-            height: auto;
-        }
-    </style> -->
+    <title>MARVELOUS Comics Database Searcher</title>
+        <style>
+            .banner {
+                background-color: red;
+                color: white;
+                padding: 10px;
+                text-align: center
+            }
+        </style>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="form-validation.css" />
+    <link rel="stylesheet" type="text/css" href="form-validation.css" />
   </head>
 
   <body>
+    <div class="banner">
+        <h1>
+            <span class="large">MCDB</span>
+
+        </h1>        
+        <h2>
+            <span class="medium">The MARVELous Comic Book Database</span>
+            <span class="small">Search Engine</span>
+        </h2>
+    </div>
     <div class="container">
         <h1></h1>
         <form id="search-form">
-
+<!--
             <div class="form-group">
                 <label for="category">Category</label>
                 <select class="form-control"  id="select-category">
@@ -32,7 +44,7 @@
                     <option value="event">Event</option>
                 </select>
             </div>
-
+-->
             <div class="form-group">
                 <label for="search">Search Word</label>
                 <input
@@ -65,6 +77,12 @@
             <!--Events Table-->
             <div id="events-table-container" class="table-container form-group"></div>
 
+          
+            <div id="next-prev-container" class="form-group">
+                <input id="prev-btn" class="btn btn-outline-primary btn-sm float-end hidden" style="width: 100px;" type="prev" value="<< Previous" />
+                <input id="next-btn" class="btn btn-outline-primary btn-sm float-end hidden" type="next" value="Next >>" />            
+            </div>
+            
             <!-- Marvel attribution -->
             <div id="attributionContainer" class=""></div>
 

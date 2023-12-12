@@ -32,6 +32,13 @@ console.log('Marvel MD5 hash:', hash);
 
 //const url = `${baseUrl}/${resource}?ts=${timestampInSeconds}&apikey=${publicKey}&hash=${hash}`;
 
+let total = 0;
+let pageCount = 1;
+let currentPage = 1;
+
+const limit = 20;
+let offset = 0;
+
 const EndpointType = {
     Character: Symbol('character'),
     Comics: Symbol('comics')
@@ -54,13 +61,14 @@ function clearTable(tableName) {
     if(table !== null) {
         table.innerHTML = ''; // Clear the table content
     }
-  }
+}
 
+const submitButton = document.getElementById('submit-btn');
 form.addEventListener("submit", function(e) {
     e.preventDefault();
     console.log("Submit Pressed");
 
-    allComics = [];
+    //allComics = [];
     comicsTableContainer.innerHTML = '';
     seriesTableContainer.innerHTML = '';
     eventsTableContainer.innerHTML = '';
@@ -70,7 +78,48 @@ form.addEventListener("submit", function(e) {
 
     const starting_offset = 0;
     //fetchCharacterData(searchWords, starting_offset);
-    displayComicsForCharacterName(searchWords);
+    displayComicsForCharacterName(searchWords, 20, 0);
+});
+
+const nextButton = document.getElementById('next-btn');
+nextButton.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    currentPage = total / limit
+
+    if(offset + limit <= total) {
+        offset += limit;
+    }
+    console.log(`offset: ${offset}`);
+
+    //allComics = [];
+    comicsTableContainer.innerHTML = '';
+    seriesTableContainer.innerHTML = '';
+    eventsTableContainer.innerHTML = '';
+
+
+    const searchWords = searchfield.value;
+    console.log(`searchWords: ${searchWords}`);
+    displayComicsForCharacterName(searchWords, limit, offset);
+});
+
+const prevButton = document.getElementById('prev-btn');
+prevButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    if(offset > 0) {
+        offset -= limit;
+    }
+    console.log(`offset: ${offset}`);
+
+   // allComics = [];
+    comicsTableContainer.innerHTML = '';
+    seriesTableContainer.innerHTML = '';
+    eventsTableContainer.innerHTML = '';
+
+
+    const searchWords = searchfield.value;
+    console.log(`searchWords: ${searchWords}`);
+    displayComicsForCharacterName(searchWords, limit, offset);
 });
 
 const clearButton = document.getElementById('clear-btn');
@@ -80,6 +129,9 @@ clearButton.addEventListener("click", function(e) {
     comicsTableContainer.innerHTML = '';
     seriesTableContainer.innerHTML = '';
     eventsTableContainer.innerHTML = '';
+
+    nextButton.classList.add('hidden');
+    prevButton.classList.add('hidden');
 });
 
 function getUrl(endpointType, character, limit, offset) {
@@ -113,12 +165,24 @@ comicsTableContainer.addEventListener('click', function(event) {
     }
 });
 
-displayComicsForCharacterName = (characterName) => {
+displayComicsForCharacterName = (characterName, limit, offset) => {
     console.log(`displayComicsForCharacterName, characterName: ${characterName}`);
-    searchCharacter(characterName).then(responseJson => {
-    //    return data;
-        const comics = responseJson.data.results;
-        const attributionHTML = responseJson.attributionHTML;
+    //searchCharacter(characterName, limit, offset).then(responseJson => {
+    searchCharacter(characterName, limit, offset).then(characterObject => {
+        //console.log(`displayComicsForCharacterName responsJson:`);
+        //console.log(responseJson);
+    
+        //const comics = responseJson.data.results;
+        comics = characterObject.getComics();
+        console.log("displayComicsForCharacterName comics:");
+        console.log(comics);
+        //total = responseJson.data.total;
+        total = characterObject.getTotal();
+        pageCount = Math.ceil(total/limit);
+        console.log(`pageCount: ${pageCount}`);
+        //const attributionHTML = responseJson.attributionHTML;
+        const attributionHTML = characterObject.getAttributionHTML();
+
 
         console.log(`fetchedComics:`);
         console.log(comics);
@@ -147,17 +211,23 @@ displayComicsForCharacterName = (characterName) => {
             const tableRow = comicsTable.insertRow();
 
             const comicRowNumber = tableRow.insertCell();
-            comicRowNumber.textContent = i + 1;
+            comicRowNumber.textContent = i + offset + 1;
 
             const comicCell = tableRow.insertCell();
             const linkCell = tableRow.insertCell();
 
+            // Set the cell widths
+            comicCell.style.width = '1000px';
+            linkCell.style.width = '100px';
+
+            // Set cell alignment
+            linkCell.style.textAlign = 'center';
+
             //console.log(comicsItems[i].name);
-            console.log(comics[i].title);
+            //console.log(comics[i].title);
             comicCell.textContent = comics[i].title;            
 
-            if(comics[i].images.length) {
-                console.log(`test[${i}]`)
+            if(comics[i].images.length) {  
                 const link = document.createElement('a');
                 //console.log(`${comics[i].images[0].path}/portrait_incredible/`);
                 //console.log(`${comics[i].images[0].path}/landscape_incredible/`);
@@ -193,6 +263,9 @@ displayComicsForCharacterName = (characterName) => {
 
         comicsTableContainer.appendChild(comicsTable);
 
+        nextButton.classList.remove('hidden');
+        prevButton.classList.remove('hidden');
+
         displayAttribution(attributionHTML); 
     });    
 }
@@ -204,129 +277,7 @@ getCoverArtImageSmall = (url, size, type) => {
     
 }
 
-createNewCharacter = (characterObject) => {
-    //const characterObject = JSON.parse(localStorage.getItem(character));
-    console.log(`characterObject: ${characterObject}`);
-
-    //const result = characterObject.data.results[0];
-    const result = characterObject[0];
-    console.log(result.id);
-    console.log(result.name);
-    console.log(result.comics);
-    //console.log(`result.comics.items: ${result.comics.items.toString}`);
-    console.log(result.stories);
-    console.log(result.events)
-    console.log(result.series);
-
-    const comicsTableContainer = document.getElementById('comics-table-container');
-    const comicsTable = document.createElement('table');
-    comicsTable.id = 'comics-table'
-    const comicsHeader = comicsTable.createTHead();
-    const comicsRow = comicsHeader.insertRow();
-
-    const comicsTh = document.createElement('th');
-    comicsTh.textContent = "COMICS";
-    comicsRow.appendChild(comicsTh);
-
-    const comicsItems = result.comics.items;
-
-    // Create table rows and cells
-    for(let i=0; i<comicsItems.length; i++) {      
-      const tableRow = comicsTable.insertRow();
-
-      const comicRowNumber = tableRow.insertCell();
-      comicRowNumber.textContent = i + 1;
-
-      const comicCell = tableRow.insertCell();
-      const linkCell = tableRow.insertCell();
-
-      //console.log(comicsItems[i].name);
-      comicCell.textContent = comicsItems[i].name;
-      
-      /*
-      const link = document.createElement('a');
-      const linkURL = `${comicsItems[i].resourceURI}?ts=${ts}&apikey=${publicKey}&hash=${hash}`;
-      console.log(linkURL);
-      link.href = linkURL;
-      link.textContent = "Link";
-      linkCell.append(link);
-*/
-    }
-
-    comicsTableContainer.appendChild(comicsTable);
-    
-    // Create the Series table
-    const seriesTableContainer = document.getElementById('series-table-container');
-    const seriesTable = document.createElement('table');
-    seriesTable.id = 'series-table'
-    const seriesHeader = seriesTable.createTHead();
-    const seriesRow = seriesHeader.insertRow();
-
-    const seriesTh = document.createElement('th');
-    seriesTh.textContent = "SERIES";
-    seriesRow.append(seriesTh);
-    
-    const seriesItems = result.series.items;
-
-    // Create a series table rows and cells
-    for(let i=0; i<seriesItems.length; i++) {
-      const tableRow = seriesTable.insertRow();
-
-      const seriesRowNumber = tableRow.insertCell();
-      seriesRowNumber.textContent = i + 1;
-
-      const seriesCell = tableRow.insertCell();
-      const linkCell = tableRow.insertCell();
-
-    //  console.log(seriesItems[i].name);
-      seriesCell.textContent = seriesItems[i].name;
-    }
-
-
-    // Append the table to the container
-    seriesTableContainer.appendChild(seriesTable);
-
-    // Create the Series table
-    const eventsTableContainer = document.getElementById('events-table-container');
-    const eventsTable = document.createElement('table');
-    eventsTable.id = 'events-table'
-    const eventsHeader = eventsTable.createTHead();
-    const eventsRow = eventsHeader.insertRow();
-
-    const eventsTh = document.createElement('th');
-    eventsTh.textContent = "EVENTS";
-    eventsRow.append(eventsTh);
-    
-    const eventsItems = result.events.items;
-
-    // Create a series table rows and cells
-    for(let i=0; i<eventsItems.length; i++) {
-      const tableRow = eventsTable.insertRow();
-
-      const eventsRowNumber = tableRow.insertCell();
-      eventsRowNumber.textContent = i + 1;
-
-      const eventsCell = tableRow.insertCell();
-      const linkCell = tableRow.insertCell();
-
-      console.log(eventsItems[i].name);
-      eventsCell.textContent = eventsItems[i].name;
-    }
-
-    // Append the table to the container
-    eventsTableContainer.appendChild(eventsTable);
-
-
-    //console.log(result.thumbnail);
-    //console.log(result.thumbnail.path);
-    //displayComicCover(result.thumbnail.path);
-    //let characterInstance = new Character(responseJson.results[0].id, responseJson.response);
-    //displayAttribution(attributionHTML);
-}
-
-let limit = 20;
-let offset = 0;
-let allComics = [];
+//let allComics = [];
 
 fetchCharacterData = (character, offset) => {
     console.log(`fetchCharacterData called`);
@@ -346,7 +297,7 @@ fetchCharacterData = (character, offset) => {
         console.log(responseJson);
         const results = responseJson.data.results;
         const comics = responseJson.data.results[0].comics;
-        allComics = allComics.concat(comics);
+        //allComics = allComics.concat(comics);
             
         console.log(`comics.length: ${comics.items.length}`);
         //if(comics.items.length === limit) {
@@ -445,20 +396,8 @@ fetchImage = () => {
   });
 }
 
-//fetchImage();
-
 // Function to display attribution HTML in your page
 function displayAttribution(attributionHTML) {
     const attributionContainer = document.getElementById('attributionContainer');
     attributionContainer.innerHTML = attributionHTML;
 }
-
-
-// Using CryptoJS library
-//const text = 'Hello, MD5!';
-//const hash_test = CryptoJS.MD5(text).toString();
-//console.log('MD5 hash:', hash_test);
-
-//const timestamp = Date.now();
-//console.log('Timestamp:', timestamp);
-
