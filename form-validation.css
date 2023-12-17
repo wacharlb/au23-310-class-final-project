@@ -47,3 +47,56 @@ h1 {
 .small {
     font-size: 0.5em; /* Adjust font size as needed */
 }
+
+.banner {
+    /* Add margin to the bottom of the banner */
+    margin-bottom: 20px; /* Adjust the value as needed */
+}
+  
+.body-content {
+    /* Alternatively, you can add margin to the top of the body content */
+    margin-top: 20px; /* Adjust the value as needed */
+}
+  
+/**************************************************************/
+
+[data-component="slideshow"] .slide {
+    display: none;
+    text-align: center;
+}
+
+[data-component="slideshow"] .slide.active {
+    display: block;
+}
+
+/* Custom styles */
+[data-component="slideshow"] .carousel {
+    display: flex;
+    overflow: hidden;
+    width: 100%; /* Reset the width */
+}
+
+[data-component="slideshow"] .carousel-item img {
+    width: 100%; /* Ensure each item takes the full width of the carousel */
+    height: auto; /* Maintain aspect ratio */
+  }
+  
+[data-component="slideshow"] .carousel-inner {
+    display: inline-block;
+}
+
+.container {
+    /* Set the container width or height if needed */
+    /* For example: */
+    width: 5000px;
+    height: auto;
+    /* Other styles for the container */
+  }
+
+.container img {
+    /* Display the image at 25% of its container's width */
+    width: 100%;
+    /* Maintain aspect ratio */
+    height: auto;
+    /* Other styles for the image */
+  }

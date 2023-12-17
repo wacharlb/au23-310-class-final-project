@@ -27,6 +27,16 @@ const EndpointType = {
     Comics: Symbol('comics')
 }
 
+const submitButton = document.getElementById('submit-btn');
+
+searchfield.addEventListener('input', function() {
+    if (searchfield.value.length >= 3) {
+        submitButton.disabled = false;
+    } else {
+        submitButton.disabled = true;
+    }
+});
+
 function clearTable(tableName) {
     const table = document.getElementById(tableName);
     if(table !== null) {
@@ -34,7 +44,7 @@ function clearTable(tableName) {
     }
 }
 
-const submitButton = document.getElementById('submit-btn');
+//const submitButton = document.getElementById('submit-btn');
 form.addEventListener("submit", function(e) {
     e.preventDefault();
     e.stopPropagation();
